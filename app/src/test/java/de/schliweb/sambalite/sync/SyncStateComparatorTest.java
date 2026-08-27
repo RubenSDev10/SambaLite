@@ -44,6 +44,16 @@ public class SyncStateComparatorTest {
   }
 
   @Test
+  public void bothMatch_whenSafCannotPreserveRemoteTimestampAfterDownload() {
+    state.localLastModified = 5000;
+    state.remoteLastModified = 1000;
+
+    assertTrue(SyncStateComparator.bothMatch(state, 1024, 5000, 1024, 1000));
+    assertFalse(
+        SyncStateComparator.localChangedWhileRemoteMatches(state, 1024, 5000, 1024, 1000));
+  }
+
+  @Test
   public void bothMatch_falseWhenSameSizeLocalFileWasModified() {
     assertTrue(SyncStateComparator.remoteMatches(state, 1024, INITIAL_MODIFIED));
     assertFalse(SyncStateComparator.localMatches(state, 1024, INITIAL_MODIFIED + 1));
