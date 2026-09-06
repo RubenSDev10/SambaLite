@@ -58,7 +58,7 @@ import org.testcontainers.utility.DockerImageName;
  */
 public class GuestLoginIntegrationTest {
 
-  private static final String IMAGE_NAME = "dockurr/samba:latest";
+  private static final String IMAGE_NAME = "dockurr/samba:4.23.8";
   private static final int SMB_PORT = 445;
   private static final String SHARE_NAME = "guestshare";
   private static final String DOMAIN = "WORKGROUP";
