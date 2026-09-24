@@ -25,7 +25,8 @@ final class SyncStateComparator {
       @Nullable FileSyncState state, long localSize, long localLastModified) {
     return hasLocalBaseline(state)
         && state.localSize == localSize
-        && state.localLastModified == localLastModified;
+        && Math.abs(state.localLastModified - localLastModified)
+            < SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS;
   }
 
   static boolean remoteMatches(
@@ -54,6 +55,7 @@ final class SyncStateComparator {
       long remoteLastModified) {
     return hasLocalBaseline(state)
         && !localMatches(state, localSize, localLastModified)
-        && remoteMatches(state, remoteSize, remoteLastModified);
+        && remoteMatches(state, remoteSize, remoteLastModified)
+        && localLastModified - remoteLastModified > SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS;
   }
 }

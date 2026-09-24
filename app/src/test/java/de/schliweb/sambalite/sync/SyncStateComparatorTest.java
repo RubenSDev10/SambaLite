@@ -55,14 +55,45 @@ public class SyncStateComparatorTest {
 
   @Test
   public void bothMatch_falseWhenSameSizeLocalFileWasModified() {
+    long newerLocalModified =
+        INITIAL_MODIFIED + SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS + 1;
+
     assertTrue(SyncStateComparator.remoteMatches(state, 1024, INITIAL_MODIFIED));
-    assertFalse(SyncStateComparator.localMatches(state, 1024, INITIAL_MODIFIED + 1));
+    assertFalse(SyncStateComparator.localMatches(state, 1024, newerLocalModified));
     assertFalse(
         SyncStateComparator.bothMatch(
-            state, 1024, INITIAL_MODIFIED + 1, 1024, INITIAL_MODIFIED));
+            state, 1024, newerLocalModified, 1024, INITIAL_MODIFIED));
     assertTrue(
         SyncStateComparator.localChangedWhileRemoteMatches(
-            state, 1024, INITIAL_MODIFIED + 1, 1024, INITIAL_MODIFIED));
+            state, 1024, newerLocalModified, 1024, INITIAL_MODIFIED));
+  }
+
+  @Test
+  public void localChangedWhileRemoteMatches_doesNotUploadOlderLocalFile() {
+    assertFalse(
+        SyncStateComparator.localChangedWhileRemoteMatches(
+            state, 512, INITIAL_MODIFIED - 10_000, 1024, INITIAL_MODIFIED));
+  }
+
+  @Test
+  public void localChangedWhileRemoteMatches_doesNotUploadSameSizeOlderLocalFile() {
+    assertFalse(
+        SyncStateComparator.localChangedWhileRemoteMatches(
+            state, 1024, INITIAL_MODIFIED - 10_000, 1024, INITIAL_MODIFIED));
+  }
+
+  @Test
+  public void localMatches_acceptsTimestampJitterWithinTolerance() {
+    long jitteredLocalModified =
+        INITIAL_MODIFIED + SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS - 1;
+
+    assertTrue(SyncStateComparator.localMatches(state, 1024, jitteredLocalModified));
+    assertTrue(
+        SyncStateComparator.bothMatch(
+            state, 1024, jitteredLocalModified, 1024, INITIAL_MODIFIED));
+    assertFalse(
+        SyncStateComparator.localChangedWhileRemoteMatches(
+            state, 1024, jitteredLocalModified, 1024, INITIAL_MODIFIED));
   }
 
   @Test
