@@ -26,7 +26,7 @@ final class SyncStateComparator {
     return hasLocalBaseline(state)
         && state.localSize == localSize
         && Math.abs(state.localLastModified - localLastModified)
-            < SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS;
+            <= SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS;
   }
 
   static boolean remoteMatches(
@@ -34,7 +34,7 @@ final class SyncStateComparator {
     return state != null
         && state.remoteSize == remoteSize
         && Math.abs(state.remoteLastModified - remoteLastModified)
-            < SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS;
+            <= SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS;
   }
 
   static boolean bothMatch(

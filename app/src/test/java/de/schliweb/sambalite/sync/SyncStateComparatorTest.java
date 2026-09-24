@@ -97,6 +97,16 @@ public class SyncStateComparatorTest {
   }
 
   @Test
+  public void bothMatch_acceptsTimestampExactlyAtToleranceAfterSafDownload() {
+    state.localLastModified = 5000;
+    state.remoteLastModified = 1000;
+
+    assertTrue(SyncStateComparator.bothMatch(state, 1024, 8000, 1024, 1000));
+    assertFalse(SyncStateComparator.localChangedWhileRemoteMatches(state, 1024, 8000, 1024, 1000));
+    assertTrue(SyncStateComparator.remoteMatches(state, 1024, 4000));
+  }
+
+  @Test
   public void bothMatch_falseWhenLocalSizeChanged() {
     assertFalse(
         SyncStateComparator.bothMatch(
@@ -119,14 +129,14 @@ public class SyncStateComparatorTest {
         SyncStateComparator.remoteMatches(
             state,
             1024,
-            INITIAL_MODIFIED + SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS));
+            INITIAL_MODIFIED + SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS + 1));
     assertFalse(
         SyncStateComparator.localChangedWhileRemoteMatches(
             state,
             1024,
             INITIAL_MODIFIED + 1,
             1024,
-            INITIAL_MODIFIED + SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS));
+            INITIAL_MODIFIED + SyncComparator.DEFAULT_TIMESTAMP_TOLERANCE_MS + 1));
   }
 
   @Test
